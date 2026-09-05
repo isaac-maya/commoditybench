@@ -1,0 +1,57 @@
+{
+  "run_id": "abstain34",
+  "dataset": "data/questions.jsonl",
+  "n_questions": 34,
+  "verified_only": true,
+  "rag": false,
+  "agentic": false,
+  "workers": 4,
+  "citable": true,
+  "date_utc": "2026-09-05T18:49:18+00:00",
+  "repo_commit": "4d253a3d5b8b939efb3ef83b56d7c06d75ded597",
+  "note": "Verified-only run.",
+  "models": [
+    {
+      "model": "deepseek-v4-flash",
+      "n": 34,
+      "attempted": 34,
+      "errors": 0,
+      "error_rate": 0.0,
+      "exact_accuracy": 0.3529,
+      "eccn_accuracy": 0.4412,
+      "group_accuracy": 0.5882,
+      "category_accuracy": 0.5882,
+      "parse_rate": 0.9412,
+      "mean_grade": 0.4735,
+      "exact_accuracy_attempted": 0.3529,
+      "config": {
+        "adapter": "OpenAIModel",
+        "name": "deepseek-v4-flash",
+        "model_id": "deepseek-v4-flash",
+        "temperature": 0.0,
+        "top_p": null,
+        "reasoning_effort": null,
+        "max_tokens": 16384,
+        "structured": "json_object",
+        "extra_body": {
+          "thinking": {
+            "type": "disabled"
+          }
+        },
+        "base_url": "https://api.deepseek.com",
+        "api_key_env": "DEEPSEEK_API_KEY"
+      }
+    }
+  ],
+  "condition": "abstain",
+  "abstain_condition": {
+    "counting_rule": "abstention = non-empty content AND explicit abstain:true AND eccn:null; empty/truncated content or a missing abstain field = error, never an abstention",
+    "prompt": "ABSTAIN_SYSTEM_PROMPT + ABSTAIN_USER_TEMPLATE (prompts.py)",
+    "rows_carry": [
+      "abstain",
+      "confidence",
+      "abstain_field",
+      "content_nonempty"
+    ]
+  }
+}

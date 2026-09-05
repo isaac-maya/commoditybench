@@ -1,0 +1,65 @@
+{
+  "run_id": "rag_ab_retrieval_a",
+  "dataset": "data/experiments/rag_ab_12.jsonl",
+  "n_questions": 12,
+  "verified_only": false,
+  "rag": true,
+  "agentic": false,
+  "workers": 4,
+  "citable": false,
+  "date_utc": "2026-09-05T22:11:23+00:00",
+  "repo_commit": "72d53639e043d1b532d35b0456b3e2e2c16d7d93",
+  "note": "NOT CITABLE: includes verified=false questions. Run with --verified-only for headline numbers.",
+  "models": [
+    {
+      "model": "deepseek-v4-flash",
+      "n": 12,
+      "attempted": 12,
+      "errors": 0,
+      "error_rate": 0.0,
+      "exact_accuracy": 0.1667,
+      "eccn_accuracy": 0.25,
+      "group_accuracy": 0.5833,
+      "category_accuracy": 0.5833,
+      "parse_rate": 1.0,
+      "mean_grade": 0.3583,
+      "exact_accuracy_attempted": 0.1667,
+      "config": {
+        "adapter": "OpenAIModel",
+        "name": "deepseek-v4-flash",
+        "model_id": "deepseek-v4-flash",
+        "temperature": 0.0,
+        "top_p": null,
+        "reasoning_effort": null,
+        "max_tokens": 16384,
+        "structured": "json_object",
+        "extra_body": {
+          "thinking": {
+            "type": "disabled"
+          }
+        },
+        "base_url": "https://api.deepseek.com",
+        "api_key_env": "DEEPSEEK_API_KEY"
+      }
+    }
+  ],
+  "condition": "rag",
+  "retriever": {
+    "backend": "BM25CCLRetriever (pure Python, zero new deps)",
+    "index": "data/ccl/ccl_index.json",
+    "top_k": 6,
+    "render_cap": 1400,
+    "hit_rate": {
+      "n_scorable": 9,
+      "gold_found": 4,
+      "hit_at_k": 0.4444,
+      "rank_counts": {
+        "1": 1,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "k": 6
+    }
+  }
+}

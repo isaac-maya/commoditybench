@@ -1,0 +1,46 @@
+{
+  "run_id": "abstain_ab_closed_book",
+  "dataset": "data/experiments/abstain_ab_12.jsonl",
+  "n_questions": 12,
+  "verified_only": false,
+  "rag": false,
+  "agentic": false,
+  "workers": 4,
+  "citable": false,
+  "date_utc": "2026-09-05T18:50:55+00:00",
+  "repo_commit": "4d253a3d5b8b939efb3ef83b56d7c06d75ded597",
+  "note": "NOT CITABLE: includes verified=false questions. Run with --verified-only for headline numbers.",
+  "models": [
+    {
+      "model": "deepseek-v4-flash",
+      "n": 12,
+      "attempted": 12,
+      "errors": 0,
+      "error_rate": 0.0,
+      "exact_accuracy": 0.1667,
+      "eccn_accuracy": 0.1667,
+      "group_accuracy": 0.5,
+      "category_accuracy": 0.5,
+      "parse_rate": 1.0,
+      "mean_grade": 0.3,
+      "exact_accuracy_attempted": 0.1667,
+      "config": {
+        "adapter": "OpenAIModel",
+        "name": "deepseek-v4-flash",
+        "model_id": "deepseek-v4-flash",
+        "temperature": 0.0,
+        "top_p": null,
+        "reasoning_effort": null,
+        "max_tokens": 16384,
+        "structured": "json_object",
+        "extra_body": {
+          "thinking": {
+            "type": "disabled"
+          }
+        },
+        "base_url": "https://api.deepseek.com",
+        "api_key_env": "DEEPSEEK_API_KEY"
+      }
+    }
+  ]
+}
