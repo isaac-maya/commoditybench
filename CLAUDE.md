@@ -277,7 +277,8 @@ table links each item to its source (with the part to search for tool-based sour
 - **New-candidate provenance caveats** (carry into sign-off): LND ECCNs are family-level
   (per-part `1C232` unconfirmed); the Oberdorfer `2B999.j` lives in a distributor product-
   name string, not a dedicated field; the Piper `9A991.d` pair looks distributor-templated.
-- **Distribution skew**: still heavy on Cat 5 + EAR99 (EAR99 = 9 of 34). Categories
+- **Distribution skew**: still heavy on Cat 5 + EAR99 (EAR99 = 10 of 34 since the
+  He-3 correction moved 1C232 → EAR99). Categories
   **0/4/6/8 empty**; 1/2/9 now thin (1–3 each). Cat 6 emptied when the Thorlabs lasers were cut.
 
 ## Environment / tooling

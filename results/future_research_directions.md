@@ -136,7 +136,7 @@ Add to the report (and optionally the scorer):
 
 ## 4. Category diversity and balance
 
-Current distribution is heavily skewed: Category 5 + EAR99 dominate (EAR99 alone is 9 of 34),
+Current distribution is heavily skewed: Category 5 + EAR99 dominate (EAR99 alone is 10 of 34,
 Categories **0/4/6/8 are empty**, and 1/2/9 are thin (1–3 items each). Per-category n is so small
 that the per-category grade table is noisy and category-level claims are weak.
 
