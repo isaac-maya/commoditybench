@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from collections import Counter
 from pathlib import Path
@@ -25,6 +26,52 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from commoditybench.dataset import load_questions  # noqa: E402
 from commoditybench.eccn import parse  # noqa: E402
+
+#: ECCN-shaped token on RAW text (case-insensitive, word-boundary anchored) so
+#: benign technical vocabulary ("numerically controlled oscillator", "motor
+#: control") never matches.
+_ECCN_TOKEN_RE = re.compile(r"\b[0-9][A-E][0-9]{3}(?:\.[a-z0-9]+)*\b", re.IGNORECASE)
+#: Same shape on a whitespace/punct-stripped copy, to catch spaced variants
+#: ("4 A 090 . a"). No boundary anchor here on purpose — after merging, the
+#: prefix is unreadable anyway; the hit is reported for human review.
+_MERGED_TOKEN_RE = re.compile(r"[0-9][A-E][0-9]{3}(?:[a-z0-9]+)*", re.IGNORECASE)
+#: The literal vocabulary words, case-insensitive (they only ever denote the answer).
+_ECCN_WORD_RE = re.compile(r"\b(eccn|ear99)\b", re.IGNORECASE)
+
+
+def leak_problems(q) -> list[str]:
+    """Curation-leak problems for one question, or [].
+
+    Wider than the historical gold-only check (which caught just the gold ECCN or
+    its CGNNN head in the description, and skipped EAR99-gold rows entirely):
+
+    - ANY ECCN-shaped token in the description OR item_name is flagged. A related
+      entry is as decisive as the gold itself ("...meets the threshold of ECCN
+      3A090.a" against a 4A090.a gold hands the model the answer structure), and
+      the model sees both fields.
+    - The words ECCN/EAR99 are flagged. "classified EAR99" inside an EAR99-gold
+      description is a full answer leak — that class was previously unchecked.
+    - Hits are reported "review in context": a same-head sibling mention or a
+      part number that merely contains the head is evidence to classify, not
+      proof (the old substring check over-flagged those).
+
+    Matches schema.md's curation rule — "Exclude the vendor name and the ECCN
+    from the description, or the task becomes a lookup instead of a
+    classification" — on both fields the model actually sees.
+    """
+    problems: list[str] = []
+    for field in ("description", "item_name"):
+        raw = getattr(q, field)
+        if not raw:
+            continue
+        merged = re.sub(r"[\s\-_.]", "", raw)
+        for tok in _ECCN_TOKEN_RE.findall(raw):
+            problems.append(f"{q.id}: ECCN-shaped token {tok!r} in {field} (review in context)")
+        for tok in _MERGED_TOKEN_RE.findall(merged):
+            problems.append(f"{q.id}: ECCN-shaped token {tok!r} in {field} (spaced variant; review in context)")
+        for word in _ECCN_WORD_RE.findall(raw):
+            problems.append(f"{q.id}: word {word.upper()!r} in {field}")
+    return problems
 
 TEMPLATE = {
     "id": "VENDOR-PRODUCT-001",
@@ -64,15 +111,10 @@ def cmd_validate(path: str) -> int:
             cats[e.category] += 1
         if q.verified:
             verified += 1
-        # Leakage check: neither the full ECCN nor its CGNNN head should appear in the
-        # description (which is all the model sees). Normalize the description first so
-        # "3 A 001" / "3a001" variants are caught, not just the exact string.
-        if not e.is_ear99 and e.head:
-            from commoditybench.eccn import normalize_eccn_text
-
-            norm_desc = normalize_eccn_text(q.description)
-            if e.head in norm_desc or normalize_eccn_text(q.gold_eccn) in norm_desc:
-                problems.append(f"{q.id}: gold_eccn (or its head {e.head}) leaks into the description")
+        # Leakage check (see leak_problems): the description AND item_name are
+        # shown to the model, so both are scanned for any ECCN-shaped token and
+        # the words ECCN/EAR99 — including on EAR99-gold rows.
+        problems.extend(leak_problems(q))
 
     print(f"Loaded {len(questions)} questions from {path}")
     print(f"  verified:   {verified}  unverified: {len(questions) - verified}")
