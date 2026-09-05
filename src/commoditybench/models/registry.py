@@ -123,6 +123,32 @@ _REGISTRY: dict[str, Callable[[str], ClassifierModel]] = {
         max_tokens=16384,
         extra_body={"top_k": 20, "min_p": 0},
     ),
+    # --- DeepSeek (open weights via the DeepSeek API, OpenAI-compatible) ---
+    # DeepSeek-V4 serves an OpenAI-compatible API at https://api.deepseek.com (key:
+    # DEEPSEEK_API_KEY). The API does NOT support strict json_schema output, so these use
+    # structured="json_object" (the answer JSON is guaranteed valid and the shared parser
+    # recovers the ECCN). LESSON LEARNED (2026-09-01 run): DeepSeek counts thinking
+    # tokens against max_tokens, and at max_tokens=16384 the default (thinking ON) mode
+    # truncated 3/34 answers to an empty trace ("...") — the reasoning_content fallback
+    # cannot help when the trace itself is cut off. Configs below control for that:
+    #   * flash = thinking OFF (fast/cheap lane; a non-reasoning comparator like GPT-4o)
+    #   * pro   = thinking ON with a 64K budget (frontier lane, like GPT-5.5/Opus);
+    #             pro was 503-overloaded on first attempt (2026-09-01) — rerun when up.
+    "deepseek-v4-flash": _openai(
+        "deepseek-v4-flash",
+        base_url="https://api.deepseek.com",
+        api_key_env="DEEPSEEK_API_KEY",
+        structured="json_object",
+        max_tokens=16384,
+        extra_body={"thinking": {"type": "disabled"}},
+    ),
+    "deepseek-v4-pro": _openai(
+        "deepseek-v4-pro",
+        base_url="https://api.deepseek.com",
+        api_key_env="DEEPSEEK_API_KEY",
+        structured="json_object",
+        max_tokens=65536,
+    ),
 }
 
 
